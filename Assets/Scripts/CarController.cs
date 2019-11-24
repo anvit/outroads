@@ -51,7 +51,6 @@ public class CarController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Enter");
         if (collision.transform.tag == "Floor")
         {
             isGrounded = true;
@@ -62,7 +61,6 @@ public class CarController : MonoBehaviour
     {
         if (collision.transform.tag == "Floor")
         {
-            Debug.Log("Exiting");
             isGrounded = false;
         }
     }
