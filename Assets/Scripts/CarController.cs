@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    public float maxSpeed = 3.0f;
-    public float currentSpeed = 0.0f;
+    public bool hasStarted = false;
     private Vector3 change;
-    private bool isJump = false;
+    private bool isGrounded = true;
+    public float turnSpeed = 2.0f;
+    public float jumpSpeed = 150f;
     private Rigidbody rigidBody;
     // Start is called before the first frame update
     void Start()
@@ -18,11 +19,37 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetAxisRaw("Vertical") != 0)
+        {
+            hasStarted = true;
+        }
         change = Vector3.zero;
         change.x = Input.GetAxisRaw("Horizontal");
-        currentSpeed = currentSpeed + Mathf.Max((Input.GetAxisRaw("Vertical")), maxSpeed);
-        change.z = currentSpeed;
-        isJump = Input.GetButton("Jump");
-        rigidBody.MovePosition(transform.position + change * Time.deltaTime);
+        if (hasStarted) rigidBody.AddForce(0, 0, 10);
+        rigidBody.AddForce(0, 0, 20 * Input.GetAxisRaw("Vertical"));
+        rigidBody.MovePosition(transform.position + change * turnSpeed * Time.deltaTime);
+        if (Input.GetButton("Jump") && isGrounded)
+        {
+            rigidBody.AddForce(0, jumpSpeed, 0);
+        }
+        rigidBody.freezeRotation = true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Enter");
+        if (collision.transform.tag == "Floor")
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.transform.tag == "Floor")
+        {
+            Debug.Log("Exiting");
+            isGrounded = false;
+        }
     }
 }
