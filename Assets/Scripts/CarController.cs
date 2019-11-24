@@ -7,32 +7,46 @@ public class CarController : MonoBehaviour
     public bool hasStarted = false;
     private Vector3 change;
     private bool isGrounded = true;
-    public float turnSpeed = 2.0f;
     public float jumpSpeed = 150f;
+    public float rotationSpeed = 50f;
+    public float maxRotation = 0.3f;
     private Rigidbody rigidBody;
-    // Start is called before the first frame update
+
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
+        rigidBody.freezeRotation = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetAxisRaw("Vertical") != 0)
         {
             hasStarted = true;
         }
+
+        // acc
+        if (hasStarted) rigidBody.AddRelativeForce(0, 0, 10);
+
         change = Vector3.zero;
-        change.x = Input.GetAxisRaw("Horizontal");
-        if (hasStarted) rigidBody.AddForce(0, 0, 10);
-        rigidBody.AddForce(0, 0, 20 * Input.GetAxisRaw("Vertical"));
-        rigidBody.MovePosition(transform.position + change * turnSpeed * Time.deltaTime);
+        rigidBody.AddRelativeForce(0, 0, 20 * Input.GetAxisRaw("Vertical"));
+        rigidBody.MovePosition(transform.position + change * Time.deltaTime);
+
+        // jump
         if (Input.GetButton("Jump") && isGrounded)
         {
-            rigidBody.AddForce(0, jumpSpeed, 0);
+            rigidBody.AddRelativeForce(0, jumpSpeed, 0);
         }
-        rigidBody.freezeRotation = true;
+
+        // rotation
+        if (Input.GetAxisRaw("Horizontal") > 0 && rigidBody.rotation.y < maxRotation)
+        {
+            transform.Rotate(Vector3.down * -rotationSpeed * Time.deltaTime);
+        }
+        else if (Input.GetAxisRaw("Horizontal") < 0 && rigidBody.rotation.y > -maxRotation)
+        {
+            transform.Rotate(Vector3.down * rotationSpeed * Time.deltaTime);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

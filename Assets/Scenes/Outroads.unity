@@ -473,8 +473,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hasStarted: 0
-  turnSpeed: 2
   jumpSpeed: 150
+  rotationSpeed: 50
+  maxRotation: 0.3
 --- !u!1 &1451846990
 GameObject:
   m_ObjectHideFlags: 0
